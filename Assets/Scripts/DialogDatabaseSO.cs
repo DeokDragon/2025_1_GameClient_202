@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,5 +30,9 @@ public class DialogDatabaseSO : ScriptableObject
 
         return null;
     }
-       
+
+    internal DialogSO GetDialogById(int? nextld)
+    {
+        throw new NotImplementedException();
+    }
 }

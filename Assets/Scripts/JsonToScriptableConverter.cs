@@ -165,7 +165,7 @@ public class JsonToScriptableConverter : EditorWindow
                     DialogSO dialogSO = ScriptableObject.CreateInstance<DialogSO>();
                     dialogSO.id = rowData.id.Value;
                     dialogSO.characterName = rowData.CharacterName;
-                    dialogSO.nextild = rowData.nextId.HasValue ? rowData.nextId.Value : -1;  // 오타 수정: nextId로 수정
+                    dialogSO.nextld = rowData.nextId.HasValue ? rowData.nextId.Value : -1;  // 오타 수정: nextId로 수정
                     dialogSO.portraitPath = rowData.protraitPath;
                     dialogSO.choices = new List<DialogChoiceSO>();
 

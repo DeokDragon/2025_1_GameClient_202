@@ -15,6 +15,7 @@ MonoBehaviour:
   id: 13
   characterName: "\uC0C1\uC778"
   text: 
+  nextld: 14
   choices: []
   portrait: {fileID: 0}
   portraitPath: 

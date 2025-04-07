@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 4
   characterName: "\uD0D0\uD5D8\uAC00"
-  text: 
+  text: "\uC55E\uC5D0 \uC624\uB798\uB41C \uC624\uB450\uB9C9\uC774 \uBCF4\uC785\uB2C8\uB2E4."
+  nextld: -1
   choices:
   - {fileID: 11400000, guid: 76a25d5bbd3e9384ab39a3a38fa41ca0, type: 2}
   - {fileID: 11400000, guid: bd31e42eafede0c42a532e555bb89dca, type: 2}
