@@ -12,6 +12,16 @@ public class CardData : ScriptableObject
         Buff,
         Utility
     }
+    public enum AdditionalEffectType
+    {
+        None,
+        DrawCard,
+        DiscardCard,
+        GainMana,
+        ReduceEnemyMana,
+        ReduceCardCost
+    }
+    public List<AdditionalEffect> additionalEffects = new List<AdditionalEffect>();
 
     public string cardName;
     public string description;
@@ -35,5 +45,18 @@ public class CardData : ScriptableObject
             default:
                 return Color.white;
         }
+    }
+
+    public string GetAdditionalEffectsDescription()
+    {
+        if (additionalEffects.Count == 0)
+            return "";
+        string result = "\n";
+
+        foreach(var effect in additionalEffects)
+        {
+            result += effect.GatDescription() + "\n";
+        }
+        return result;
     }
 }
