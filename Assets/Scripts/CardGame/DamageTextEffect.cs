@@ -1,0 +1,152 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using UnityEditor.UI;
+using Unity.VisualScripting;
+
+public class DamageTextEffect : MonoBehaviour
+{
+    [SerializeField] private float moveSpeed = 100f;
+    [SerializeField] private float lifeTime = 1.5f;
+
+    private TextMeshProUGUI textMesh;
+    private RectTransform rectTransform;
+    private CanvasGroup canvasGroup;
+    private Color originalColor;
+    private Vector2 moveDirection;
+    private float timer = 0f;
+
+    private bool isCritical = false;
+    private bool isStatusEffect = false;
+    private bool useGaryity = true;
+    private float verticalVelocity = 100f;
+
+    public void Initialized(bool critical, bool statusEffect)
+    {
+        isCritical = critical;
+        isStatusEffect = statusEffect;
+        if (isStatusEffect)
+        {
+            useGaryity = false;
+        }
+        Start();
+    }
+
+    public void SetVerticalMovement()
+    {
+        useGaryity = false;
+    }
+    private IEnumerator PuchScale(float intentisy)
+    {
+        Vector3 originalScale = transform.localScale;
+        Vector3 targetScale = originalScale * intentisy;
+
+        float duration = 0.2f;
+        float elapead = 0f;
+
+        while (elapead < duration)
+        {
+            elapead += Time.deltaTime;
+            float t = elapead/ duration;
+            transform.localScale = Vector3.Lerp(targetScale, originalScale, t);
+            yield return null;
+        }
+        transform.localScale = originalScale;
+    }
+    private IEnumerator FlashText()
+    {
+        if (textMesh == null) yield break;
+
+        Color flashColor = Color.white;
+        float flashDuration = 0.2f;
+        Color startColor = textMesh.color;
+        textMesh.color = flashColor;
+        yield return new WaitForSeconds(flashDuration);
+    }
+
+    private IEnumerator CreatFlashEffect()
+    {
+        if (textMesh == null) yield break;
+        float interval = 0.05f;
+        int flashCount = 3;
+        for (int i = 0; i< flashCount; i++)
+        {
+            textMesh.alpha = 0.5f;
+            yield return new WaitForSeconds(interval);
+            textMesh.alpha = 1.0f;
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        textMesh = GetComponent<TextMeshProUGUI>();
+        rectTransform = GetComponent<RectTransform>();
+        canvasGroup = GetComponent<CanvasGroup>();
+
+        if (canvasGroup != null )
+        {
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
+        if (textMesh != null )
+        {
+            originalColor = textMesh.color;
+            float randomX = Random.Range( -0.5f, 0.5f );
+            float randomY = useGaryity ? Random.Range(0.5f, 1.0f) : Random.Range(0.8f, 1.5f);
+            moveDirection = new Vector2(randomX, randomY).normalized;
+
+            if(rectTransform != null )
+            {
+                rectTransform.rotation = Quaternion.Euler(0, 0, Random.Range(-10.0f, 10.0f));
+            }
+            if(useGaryity)
+            {
+                verticalVelocity = Random.Range(100.0f, 200f);
+            }
+            StartCoroutine(PuchScale(isCritical ? 1.5f : 1.2f));
+            if (isCritical)
+            {
+                StartCoroutine(FlashText());
+                StartCoroutine(CreatFlashEffect());
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (rectTransform == null) return;
+        if(useGaryity)
+        {
+            verticalVelocity -= 300f + Time.deltaTime;
+            rectTransform.anchoredPosition += new Vector2(0, verticalVelocity * Time.deltaTime);
+            rectTransform.anchoredPosition += new Vector2(moveDirection.x * moveSpeed * Time.deltaTime, 0);
+
+        }
+        else
+        {
+            rectTransform.anchoredPosition += (Vector2)(moveDirection * moveSpeed * Time.deltaTime);
+        }
+
+        timer += Time.deltaTime;
+        if(timer >= lifeTime * 0.5f)
+        {
+            if(canvasGroup != null)
+            {
+                canvasGroup.alpha = Mathf.Lerp(1f, 0f, (timer - lifeTime * 0.5f) / (lifeTime * 0.5f));
+            }
+            else if (textMesh != null)
+            {
+                float alpha = Mathf.Lerp(originalColor.a, 0f, (timer - lifeTime * 0.5f) / (lifeTime * 0.5f));
+                textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            }
+            moveSpeed = Mathf.Lerp(moveSpeed, 20f, Time.deltaTime * 2f);
+            if((canvasGroup != null && canvasGroup.alpha < 0.05f) || (textMesh != null && textMesh.color.a <= 0.05f))
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
+}
